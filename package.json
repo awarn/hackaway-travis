@@ -5,6 +5,7 @@
   "author": "awarnhag",
   "license": "MIT",
   "dependencies": {
+    "bluebird": "^3.4.7",
     "dotenv": "^4.0.0",
     "foursquarevenues": "^3.0.0",
     "restify": "^4.3.0"
