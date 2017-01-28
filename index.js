@@ -65,11 +65,13 @@ function getVenue(id) {
 }
 
 function makeChoice(venues) {
+
 	filteredVenues = venues.map((venue) => {
 		if (venue.rating >= 7) {
 			return venue;
 		}
 	});
+
 	let choice;
 	if (filteredVenues.length > 0) {
 		choice = filteredVenues[Math.floor(Math.random()*filteredVenues.length)];
@@ -79,11 +81,39 @@ function makeChoice(venues) {
 	}
 	chain.push(choice);
 	return choice;
+
 }
 
-function getVenueChain(lat, long) {
+function getMidpoint(lat1,lon1,lat2,lon2) {
+
+	let convertN = (Math.PI / 180);
+
+	let dLon = (lon2 - lon1) * convertN;
+
+	//convert to radians
+	lat1 = lat1 * convertN;
+	lat2 = lat2 * convertN;
+	lon1 = lon1 * convertN;
+
+	let Bx = Math.cos(lat2) * Math.cos(dLon);
+	let By = Math.cos(lat2) * Math.sin(dLon);
+	let lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
+	let lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
+
+	let degLat = lat3 / convertN;
+	let degLng = lon3 / convertN;
+
+	let location = {
+		lat: degLat,
+		lng: degLng
+	}
+	//print out in degrees
+	return location;
+}
+
+function getVenueChain(lat, lng) {
 	return new Promise((resolve, reject) => {
-		getVenues(lat, long)
+		getVenues(lat, lng)
 		.then((response) => {
 			let choice = makeChoice(response);
 			return getVenues(choice.location.lat, choice.location.lng);
@@ -94,7 +124,10 @@ function getVenueChain(lat, long) {
 		})
 		.then((response) => {
 			let choice = makeChoice(response);
-			return getVenues(choice.location.lat, choice.location.lng);
+			let midPoint = getMidpoint(
+				choice.location.lat, choice.location.lng, 
+				lat, lng);
+			return getVenues(midPoint.lat, midPoint.lng);
 		})
 		.then((response) => {
 			makeChoice(response);
@@ -115,8 +148,8 @@ server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
  
-server.get('/venues/:lat/:long', function (req, res, next) {
-  getVenues(req.params.lat, req.params.long)
+server.get('/venues/:lat/:lng', function (req, res, next) {
+  getVenues(req.params.lat, req.params.lng)
 	.then((venues) => {
 		console.log(venues);
 		res.send(venues);
@@ -128,8 +161,8 @@ server.get('/venues/:lat/:long', function (req, res, next) {
   return next();
 });
 
-server.get('/chain/:lat/:long', function (req, res, next) {
-  getVenueChain(req.params.lat, req.params.long)
+server.get('/chain/:lat/:lng', function (req, res, next) {
+  getVenueChain(req.params.lat, req.params.lng)
 	.then((venues) => {
 		res.send(venues);
 	})
