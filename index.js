@@ -66,21 +66,22 @@ function getVenue(id) {
 
 function makeChoice(venues) {
 
-	filteredVenues = venues.map((venue) => {
+	let filteredVenues = venues.map((venue) => {
 		if (venue.rating >= 7) {
 			return venue;
 		}
 	});
 
-	let choice;
+	let choice = null;
 	if (filteredVenues.length > 0) {
 		choice = filteredVenues[Math.floor(Math.random()*filteredVenues.length)];
 	}
 	else {
 		choice = venues[Math.floor(Math.random()*venues.length)];
 	}
+
 	chain.push(choice);
-	return choice;
+	return chain;
 
 }
 
@@ -113,25 +114,29 @@ function getMidpoint(lat1,lon1,lat2,lon2) {
 
 function getVenueChain(lat, lng) {
 	return new Promise((resolve, reject) => {
-		getVenues(lat, lng)
+		getVenues(lat, lng, 8000)
 		.then((response) => {
-			let choice = makeChoice(response);
+			let chain = makeChoice(response);
+			let choice = chain[chain.length-1];
 			return getVenues(choice.location.lat, choice.location.lng);
 		})
 		.then((response) => {
-			let choice = makeChoice(response);
+			let chain = makeChoice(response);
+			let choice = chain[chain.length-1];
 			return getVenues(choice.location.lat, choice.location.lng);
 		})
 		.then((response) => {
-			let choice = makeChoice(response);
+			let chain = makeChoice(response);
+			let choice = chain[chain.length-1];
 			let midPoint = getMidpoint(
 				choice.location.lat, choice.location.lng, 
 				lat, lng);
 			return getVenues(midPoint.lat, midPoint.lng);
 		})
 		.then((response) => {
-			makeChoice(response);
-			resolve(chain);
+			let chain2 = makeChoice(response);
+			chain = [];
+			resolve(chain2);
 		})
 		.catch((error) => {
 			reject(error);
