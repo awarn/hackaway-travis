@@ -40,7 +40,7 @@ server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
  
-server.get('/echo/:lat/:long', function (req, res, next) {
+server.get('/venues/:lat/:long', function (req, res, next) {
   getVenues(req.params.lat, req.params.long)
 	.then((venues) => {
 		console.log(venues);
