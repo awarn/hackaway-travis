@@ -1,0 +1,12 @@
+{
+  "name": "travis",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "awarnhag",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "foursquarevenues": "^3.0.0",
+    "restify": "^4.3.0"
+  }
+}
