@@ -118,12 +118,29 @@ function getVenueChain(lat, lng) {
 		.then((response) => {
 			let chain = makeChoice(response);
 			let choice = chain[chain.length-1];
-			return getVenues(choice.location.lat, choice.location.lng);
+			if (choice) {
+				return getVenues(choice.location.lat, choice.location.lng);
+			}
+			let rejection = {
+				error: "No venues found for that location."
+			}
+			reject(rejection);
 		})
 		.then((response) => {
 			let chain = makeChoice(response);
 			let choice = chain[chain.length-1];
-			return getVenues(choice.location.lat, choice.location.lng);
+			if (choice) {
+				return getVenues(choice.location.lat, choice.location.lng, 4000);
+			}
+			resolve(chain);
+		})
+		.then((response) => {
+			let chain = makeChoice(response);
+			let choice = chain[chain.length-1];
+			if (choice) {
+				return getVenues(choice.location.lat, choice.location.lng);
+			}
+			resolve(chain);
 		})
 		.then((response) => {
 			let chain = makeChoice(response);
@@ -131,7 +148,10 @@ function getVenueChain(lat, lng) {
 			let midPoint = getMidpoint(
 				choice.location.lat, choice.location.lng, 
 				lat, lng);
-			return getVenues(midPoint.lat, midPoint.lng);
+			if (choice) {
+				return getVenues(choice.location.lat, choice.location.lng);
+			}
+			resolve(chain);
 		})
 		.then((response) => {
 			let chain2 = makeChoice(response);
