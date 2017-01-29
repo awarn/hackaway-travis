@@ -60,7 +60,10 @@ function getVenue(id) {
 				venue.listed = null;
 				venue.photos = null;
 				venue.popular = null;
-				venue.tips = null;
+				let tipGroup = venue.tips.groups[0];
+				let tipItem = venue.tips.groups[0].items[0];
+				venue.tips.groups = [tipGroup];
+				venue.tips.groups[0].items = [tipItem];
 				resolve(venue);
 			}
 			else {
