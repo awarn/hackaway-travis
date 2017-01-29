@@ -46,6 +46,7 @@ function getVenues(lat, long, radius) {
 		});
 
 	});
+
 }
 
 function getVenue(id) {
@@ -55,7 +56,12 @@ function getVenue(id) {
 		}
 		foursquare.getVenue(params, function(error, response) {
 			if (!error) {
-				resolve(response.response.venue);
+				let venue = response.response.venue;
+				venue.listed = null;
+				venue.photos = null;
+				venue.popular = null;
+				venue.tips = null;
+				resolve(venue);
 			}
 			else {
 				reject(error);
@@ -189,6 +195,7 @@ server.get('/venues/:lat/:lng', function (req, res, next) {
 server.get('/chain/:lat/:lng', function (req, res, next) {
   getVenueChain(req.params.lat, req.params.lng)
 	.then((venues) => {
+		console.log(venues.length);
 		res.send(venues);
 	})
 	.catch((error) => {
