@@ -15,9 +15,7 @@ if (!process.env.FOURSQUARE_SECRET) {
 
 let chain = [];
 
-function getVenues(lat, long, radius) {
-
-	radius = radius != undefined ? radius : 2000;
+function getVenues(lat, long, radius = 2000) {
 
 	return new Promise((resolve, reject) => {
 
